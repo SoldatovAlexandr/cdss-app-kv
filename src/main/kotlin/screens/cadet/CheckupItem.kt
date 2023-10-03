@@ -10,5 +10,6 @@ import data.model.UiCheckup
 fun CheckupItem(checkup: UiCheckup, modifier: Modifier) {
     Row(modifier) {
         Text(checkup.date, Modifier.weight(1f), maxLines = 1)
+        Text(checkup.type, Modifier.weight(1f), maxLines = 1)
     }
 }

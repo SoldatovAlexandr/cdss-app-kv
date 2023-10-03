@@ -1,9 +1,7 @@
 package data.db
 
 import androidx.compose.ui.res.useResource
-import data.db.entity.CadetTable
-import data.db.entity.CheckupTable
-import data.db.entity.GroupTable
+import data.db.entity.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -32,6 +30,21 @@ object DatabaseFactory {
             }
             if (!SchemaUtils.checkCycle(CheckupTable)) {
                 SchemaUtils.create(CheckupTable)
+            }
+            if (!SchemaUtils.checkCycle(ToothTable)) {
+                SchemaUtils.create(ToothTable)
+            }
+            if (!SchemaUtils.checkCycle(PeriodontalTissuesTable)) {
+                SchemaUtils.create(PeriodontalTissuesTable)
+            }
+            if (!SchemaUtils.checkCycle(OralDamagesTable)) {
+                SchemaUtils.create(OralDamagesTable)
+            }
+            if (!SchemaUtils.checkCycle(EnamelSpottingTable)) {
+                SchemaUtils.create(EnamelSpottingTable)
+            }
+            if (!SchemaUtils.checkCycle(AttachmentLossTable)) {
+                SchemaUtils.create(AttachmentLossTable)
             }
         }
         db

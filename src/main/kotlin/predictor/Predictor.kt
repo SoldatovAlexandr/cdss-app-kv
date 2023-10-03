@@ -2,6 +2,6 @@ package predictor
 
 interface Predictor {
 
-    fun predict(): Float
+    fun predict(checkupFeatures: CheckupFeatures): Double
 
 }

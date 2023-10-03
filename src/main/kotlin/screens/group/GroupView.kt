@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import data.model.UiGroup
-import repository.CadetRepository
 import repository.CheckupRepository
 import screens.cadet.CadetView
 import screens.cadet.CadetViewModel
@@ -48,7 +47,7 @@ fun GroupView(
             CadetTable(viewModel, group, modifier)
         } else {
             CadetView(
-                CadetViewModel(CadetRepository, CheckupRepository),
+                CadetViewModel(CheckupRepository),
                 { viewModel.setSelectCadet(null) },
                 modifier,
                 selectedCadet.data!!

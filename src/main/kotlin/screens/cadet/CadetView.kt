@@ -23,6 +23,7 @@ fun CadetView(
 ) {
     Column {
         val isCreateCheckout by viewModel.isCreateCheckout.collectAsState()
+        viewModel.findLastByCadetId(cadet.id)
 
         Icon(
             painterResource("img/ic_close.svg"),

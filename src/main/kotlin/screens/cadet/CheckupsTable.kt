@@ -44,6 +44,7 @@ fun CheckupsTable(
             item {
                 Row(Modifier.fillMaxWidth()) {
                     Text("Дата осмотра", Modifier.weight(1f), maxLines = 1)
+                    Text("Тип осмотра", Modifier.weight(1f), maxLines = 1)
                 }
             }
 

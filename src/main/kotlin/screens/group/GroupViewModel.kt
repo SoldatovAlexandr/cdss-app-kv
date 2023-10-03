@@ -64,8 +64,8 @@ class GroupViewModel(
                 byteType,
                 healthGroup
             )
+            getCadetsByGroupId(groupId)
             _isCreateCadet.emit(false)
-            cadetRepository.getCadetsByGroupId(groupId)
         }
     }
 }

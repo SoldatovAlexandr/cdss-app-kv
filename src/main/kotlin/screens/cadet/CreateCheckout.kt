@@ -1,19 +1,26 @@
 package screens.cadet
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
-import androidx.compose.material.TextField
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import data.model.UiCadet
+import cpu.CpuCalculator
+import data.model.*
+import predictor.CatBoostPredictor
+import predictor.CheckupFeatures
 import ui.NormalText
+import ui.dropdown.custom.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -21,7 +28,7 @@ import java.time.LocalDateTime
 fun CreateCheckout(
     cadet: UiCadet,
     viewModel: CadetViewModel,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
 
     Column {
@@ -30,363 +37,294 @@ fun CreateCheckout(
                 viewModel.setCreatedCheckout(false)
             }.padding(8.dp)
         )
+        val lastCheckup by viewModel.lastCheckup.collectAsState()
 
-        var date = LocalDateTime.now().toString()
+        val cpuCalculator = CpuCalculator
+        val cpuPredictor = CatBoostPredictor
 
-        var tooth17 by remember { mutableStateOf("0") }
-        var tooth16 by remember { mutableStateOf("0") }
-        var tooth15 by remember { mutableStateOf("0") }
-        var tooth14 by remember { mutableStateOf("0") }
-        var tooth13 by remember { mutableStateOf("0") }
-        var tooth12 by remember { mutableStateOf("0") }
-        var tooth11 by remember { mutableStateOf("0") }
-
-        var tooth27 by remember { mutableStateOf("0") }
-        var tooth26 by remember { mutableStateOf("0") }
-        var tooth25 by remember { mutableStateOf("0") }
-        var tooth24 by remember { mutableStateOf("0") }
-        var tooth23 by remember { mutableStateOf("0") }
-        var tooth22 by remember { mutableStateOf("0") }
-        var tooth21 by remember { mutableStateOf("0") }
-
-        var tooth47 by remember { mutableStateOf("0") }
-        var tooth46 by remember { mutableStateOf("0") }
-        var tooth45 by remember { mutableStateOf("0") }
-        var tooth44 by remember { mutableStateOf("0") }
-        var tooth43 by remember { mutableStateOf("0") }
-        var tooth42 by remember { mutableStateOf("0") }
-        var tooth41 by remember { mutableStateOf("0") }
-
-        var tooth37 by remember { mutableStateOf("0") }
-        var tooth36 by remember { mutableStateOf("0") }
-        var tooth35 by remember { mutableStateOf("0") }
-        var tooth34 by remember { mutableStateOf("0") }
-        var tooth33 by remember { mutableStateOf("0") }
-        var tooth32 by remember { mutableStateOf("0") }
-        var tooth31 by remember { mutableStateOf("0") }
-
-        var fluorose by remember { mutableStateOf("0") }
-        var levelOfHygiene by remember { mutableStateOf("0") }
-
+        val date = LocalDateTime.now()
+        val checkup by remember { mutableStateOf(lastCheckup.data!!) }
         var cpu by remember { mutableStateOf("0") }
+
+        fun predict() {
+            val calculatedCpuIndex = cpuCalculator.calculate(concatenate(checkup.topTeeth, checkup.downTeeth))
+            val checkupFeatures = CheckupFeatures(
+                //cadet.dateOfBirthday
+                10, //todo
+                cadet.ethnicGroup,
+                cadet.placeOfBirthday,
+                cadet.previousPlaceOfLiving,
+                cadet.byteType,
+                cadet.healthGroup.toInt(),
+                if (checkup.levelOfHygiene.isBlank()) 0 else checkup.levelOfHygiene.toInt(),
+                if (checkup.erosion.isBlank()) 0 else checkup.erosion.toInt(),
+                if (checkup.erosionCount.isBlank()) 0 else checkup.erosionCount.toInt(),
+                if (checkup.trauma.isBlank()) 0 else checkup.trauma.toInt(),
+                if (checkup.traumaCount.isBlank()) 0 else checkup.traumaCount.toInt(),
+                calculatedCpuIndex.intact,
+                calculatedCpuIndex.caries,
+                calculatedCpuIndex.fillingWithCaries,
+                calculatedCpuIndex.fillingWithoutCaries,
+                calculatedCpuIndex.removalCaries,
+                calculatedCpuIndex.removalOtherReason,
+                calculatedCpuIndex.sealedFissure,
+                calculatedCpuIndex.veneer,
+                calculatedCpuIndex.impacted,
+                calculatedCpuIndex.notRegistered,
+                calculatedCpuIndex.intactTemp,
+                calculatedCpuIndex.cariesTemp,
+                calculatedCpuIndex.fillingWithCariesTemp,
+                calculatedCpuIndex.fillingWithoutCariesTemp,
+                calculatedCpuIndex.removalCariesTemp,
+                calculatedCpuIndex.sealedFissureTemp,
+                calculatedCpuIndex.veneerTemp,
+                if (checkup.tjpSymptoms.isBlank()) 0 else checkup.tjpSymptoms.toInt(),
+                if (checkup.tjpClicking.isBlank()) 0 else checkup.tjpClicking.toInt(),
+                if (checkup.tjpSoreness.isBlank()) 0 else checkup.tjpSoreness.toInt(),
+                if (checkup.tjpLimitedMobility.isBlank()) 0 else checkup.tjpLimitedMobility.toInt(),
+                calculatedCpuIndex.getIndex()
+            )
+            checkup.predictedCpu = "%.3f".format(cpuPredictor.predict(checkupFeatures))
+        }
 
         Row {
             NormalText("Осмотр ${LocalDate.now()}", Modifier.weight(1f))
             NormalText("Индекс КПУ ${cpu}", Modifier.weight(1f))
+            NormalText("Увеличение индекса КПУ через год:${checkup.predictedCpu}", Modifier.weight(1f))
         }
 
-        LazyColumn(modifier.fillMaxWidth()) {
+        LazyColumn(modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 20.dp)) {
 
             item {
-                Box(Modifier.fillMaxWidth().height(1.dp).background(Color.LightGray))
                 Row {
                     Column {
                         NormalText("Состояние зубов", Modifier.padding(top = 16.dp))
 
                         Row {
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("17", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth17,
-                                    onValueChange = { tooth17 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("16", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth16,
-                                    onValueChange = { tooth16 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("15", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth15,
-                                    onValueChange = { tooth15 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("14", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth14,
-                                    onValueChange = { tooth14 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("13", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth13,
-                                    onValueChange = { tooth13 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("12", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth12,
-                                    onValueChange = { tooth12 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("11", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth11,
-                                    onValueChange = { tooth11 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("21", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth21,
-                                    onValueChange = { tooth21 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("22", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth22,
-                                    onValueChange = { tooth22 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("23", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth23,
-                                    onValueChange = { tooth23 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("24", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth24,
-                                    onValueChange = { tooth24 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("25", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth25,
-                                    onValueChange = { tooth25 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("26", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth26,
-                                    onValueChange = { tooth26 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                NormalText("27", Modifier.padding(top = 16.dp))
-                                TextField(
-                                    tooth27,
-                                    onValueChange = { tooth27 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
+                            checkup.topTeeth.forEach { tooth ->
+                                ToothDropDownMenu({
+                                    tooth.value = it
+                                    cpu =
+                                        cpuCalculator.calculate(concatenate(checkup.topTeeth, checkup.downTeeth))
+                                            .getIndex().toString()
+                                    predict()
+                                }, tooth.number, tooth.value)
                             }
                         }
-
                         Row {
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth47,
-                                    onValueChange = { tooth47 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("47", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth46,
-                                    onValueChange = { tooth46 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("46", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth45,
-                                    onValueChange = { tooth45 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("45", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth44,
-                                    onValueChange = { tooth44 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("44", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth43,
-                                    onValueChange = { tooth43 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("43", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth42,
-                                    onValueChange = { tooth42 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("42", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth41,
-                                    onValueChange = { tooth41 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("41", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth31,
-                                    onValueChange = { tooth31 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("31", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth32,
-                                    onValueChange = { tooth32 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("32", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth33,
-                                    onValueChange = { tooth33 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("33", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth34,
-                                    onValueChange = { tooth34 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("34", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth35,
-                                    onValueChange = { tooth35 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("35", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth36,
-                                    onValueChange = { tooth36 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("36", Modifier.padding(top = 16.dp))
-                            }
-
-                            Column(Modifier.padding(start = 8.dp)) {
-                                TextField(
-                                    tooth37,
-                                    onValueChange = { tooth37 = it },
-                                    Modifier.padding(vertical = 8.dp).size(50.dp)
-                                )
-                                NormalText("37", Modifier.padding(top = 16.dp))
+                            checkup.downTeeth.forEach { tooth ->
+                                ToothDropDownMenu({
+                                    tooth.value = it
+                                    cpu =
+                                        cpuCalculator.calculate(concatenate(checkup.topTeeth, checkup.downTeeth))
+                                            .getIndex().toString()
+                                    predict()
+                                }, tooth.number, tooth.value)
                             }
                         }
-                    }
-                    Column {
-                        /*NormalText(
-                            """
-                            Постоянные (Временные):
-                            0 (A) - Интактный 
-                            1 (В) - Кариес
-                            2 (С) - Пломба, с кариесом
-                            3 (D) - Пломба, без кариеса 
-                            4 (E) - Удаление из-за осложнений кариеса 
-                            5 - Удаление по другим причинам 
-                            6 (F) - Герметизированная фиссура 
-                            7 (G) - Опорный зуб мостовидн. протез/коронка, винир 
-                            8 - Не прорезавшийся зуб 
-                            9 - Не регистрируется
-                        """.trimMargin(), Modifier.padding(top = 16.dp)
-                        )*/
                     }
                 }
             }
 
             item {
-                Box(Modifier.fillMaxWidth().height(1.dp).background(Color.LightGray))
-                Row {
+                Row(Modifier.padding(top = 20.dp)) {
                     Column {
-                        NormalText("Флюороз эмали", Modifier.padding(top = 16.dp))
-                        TextField(
-                            fluorose,
-                            onValueChange = { fluorose = it },
-                            Modifier.padding(vertical = 8.dp).size(50.dp)
-                        )
+                        FluoroseDropDownMenu({
+                            checkup.fluorose = it
+                            predict()
+                        }, "Флюороз эмали", checkup.fluorose)
                     }
-
                     Column(Modifier.padding(start = 100.dp)) {
-                        NormalText("Уровень гигиены ПР(УПС)", Modifier.padding(top = 16.dp))
-                        TextField(
-                            levelOfHygiene,
-                            onValueChange = { levelOfHygiene = it },
-                            Modifier.padding(vertical = 8.dp).size(50.dp)
+                        LevelOfHygieneDropDownMenu({
+                            checkup.levelOfHygiene = it
+                            predict()
+                        }, "Уровень гигиены ПР(УПС)", checkup.levelOfHygiene)
+                    }
+                    Column(Modifier.padding(start = 100.dp)) {
+                        ByteTypeDropDownMenu({
+                            checkup.byteType = it
+                            predict()
+                        }, "Прикус", checkup.byteType)
+                    }
+                }
+            }
+
+            item {
+                Column {
+                    NormalText("Состояние тканей парадонта", Modifier.padding(top = 16.dp))
+
+                    Row {
+                        checkup.topPeriodontalTissues.forEach { tissues ->
+                            PeriodontalTissuesDropDownMenu(
+                                {
+                                    tissues.value = it
+                                    predict()
+                                },
+                                tissues.number,
+                                tissues.value
+                            )
+                        }
+                    }
+                    Row {
+                        checkup.downPeriodontalTissues.forEach { tissues ->
+                            PeriodontalTissuesDropDownMenu({
+                                tissues.value = it
+                                predict()
+                            }, tissues.number, tissues.value)
+                        }
+                    }
+                }
+            }
+
+            item {
+                Column {
+                    NormalText("Пятнистость эмали/гипоплазия", Modifier.padding(top = 16.dp))
+
+                    Row {
+                        checkup.enamelSpotting.forEach { tooth ->
+                            EnamelSpottingDropDownMenu({
+                                tooth.value = it
+                                predict()
+                            }, tooth.number, tooth.value)
+                        }
+                    }
+                }
+            }
+            item {
+                NormalText("Потеря прикрепления*", Modifier.padding(top = 16.dp))
+                NormalText("*(не регистрируется у лиц моложе 15 лет)", Modifier.padding(top = 10.dp))
+
+                Row {
+                    checkup.attachmentLoss.forEach { tooth ->
+                        AttachmentLossDropDownMenu({
+                            tooth.value = it
+                            predict()
+                        }, tooth.number, tooth.value)
+                    }
+                }
+            }
+
+            item {
+                NormalText("Оценка височнонижечелюстного сустава", Modifier.padding(top = 16.dp))
+
+                Row {
+                    Column(Modifier.weight(1f)) {
+                        TemporomandibularJointDropDownMenu({
+                            checkup.tjpClicking = it
+                            predict()
+                        }, "Щелканье", checkup.tjpClicking)
+                    }
+                    Column(Modifier.weight(1f)) {
+                        TemporomandibularJointDropDownMenu({
+                            checkup.tjpClicking = it
+                            predict()
+                        }, "Симптомы", checkup.tjpClicking)
+                    }
+                    Column(Modifier.weight(1f)) {
+                        TemporomandibularJointDropDownMenu({
+                            checkup.tjpSoreness = it
+                            predict()
+                        }, "Болезненность", checkup.tjpSoreness)
+                    }
+                    Column(Modifier.weight(1f)) {
+                        TemporomandibularJointDropDownMenu(
+                            {
+                                checkup.tjpLimitedMobility = it
+                                predict()
+                            },
+                            "Ограничение подвижности челюсти",
+                            checkup.tjpLimitedMobility
                         )
                     }
                 }
             }
+            item {
+                Row {
+                    Column {
+                        NormalText("Эрозия зубов", Modifier.padding(top = 16.dp))
+
+                        ErosionDropDownMenu({
+                            checkup.erosion = it
+                            predict()
+                        }, "Состояние", checkup.erosion)
+
+                        OutlinedTextField(
+                            value = checkup.erosionCount,
+                            onValueChange = { value ->
+                                checkup.erosionCount = value.filter {
+                                    it.isDigit()
+                                }
+                                predict()
+                            },
+                            label = { Text("Количество пораженных зубов") }
+                        )
+                    }
+
+                    Column(Modifier.padding(start = 100.dp)) {
+                        NormalText("Травма зубов", Modifier.padding(top = 16.dp))
+
+                        TraumaDropDownMenu({
+                            checkup.trauma = it
+                            predict()
+                        }, "Состояние", checkup.trauma)
+
+                        OutlinedTextField(
+                            value = checkup.traumaCount,
+                            onValueChange = { value ->
+                                checkup.traumaCount = value.filter { it.isDigit() }
+                                predict()
+                            },
+                            label = { Text("Количество пораженных зубов") }
+                        )
+                    }
+                }
+            }
+
+            item {
+                Row {
+                    Column {
+                        NormalText("Состояние", Modifier.padding(top = 16.dp))
+
+                        checkup.oralDamages.forEach { value ->
+                            OralDamageStateDropDownMenu(
+                                {
+                                    value.value = it
+                                    predict()
+                                },
+                                "",
+                                value.value
+                            )
+                        }
+                    }
+
+                    Column(Modifier.padding(start = 100.dp)) {
+                        NormalText("Локализация", Modifier.padding(top = 16.dp))
+
+                        checkup.oralDamages.forEach { value ->
+                            OralDamageLocaleDropDownMenu(
+                                {
+                                    value.number = it
+                                    predict()
+                                },
+                                "",
+                                value.number
+                            )
+                        }
+                    }
+                }
+            }
+
+            item {
+                Button(onClick = {
+                    viewModel.createCheckout(cadet.id, checkup, date)
+                }, enabled = true) {
+                    Text("Сохранить")
+                }
+            }
         }
-
-        /*Button(onClick = {
-
-        }, enabled = true) {
-            Text("Создать")
-        }*/
     }
+}
+
+fun <T> concatenate(vararg lists: List<T>): List<T> {
+    return listOf(*lists).flatten()
 }

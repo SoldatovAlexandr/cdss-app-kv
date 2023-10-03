@@ -7,35 +7,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import data.model.UiGroup
-import ui.NormalText
+import ui.dropdown.DropDownItem
+import ui.dropdown.DropDownMenu
 
 @Composable
 fun CreateCadet(
     group: UiGroup, viewModel: GroupViewModel, modifier: Modifier
 ) {
 
-    Column {
-
-        var byteTypes = arrayOf(
-            "Ортогнатический",
-            "Глубокий",
-            "Дистальный",
-            "Мезиальный",
-            "Перекрестный",
-            "Прямой",
-            "Открытый",
-            "Тортоаномалия",
-            "Скученность",
-            "Диастема/Тремы"
-        )
+    Column(Modifier.padding(20.dp)) {
 
         var firstName by remember { mutableStateOf("") }
         var lastName by remember { mutableStateOf("") }
@@ -44,8 +32,8 @@ fun CreateCadet(
         var ethnicGroup by remember { mutableStateOf("") }
         var placeOfBirthday by remember { mutableStateOf("") }
         var previousPlaceOfLiving by remember { mutableStateOf("") }
-        var byteType by remember { mutableStateOf(byteTypes[0]) }
-        var healthGroup by remember { mutableStateOf("|") }
+        var byteType by remember { mutableStateOf("") }
+        var healthGroup by remember { mutableStateOf("") }
 
         fun isValid(): Boolean {
             return firstName.isNotBlank() && lastName.isNotBlank() && patronymic.isNotBlank() && dateOfBirthday.isNotBlank()
@@ -58,63 +46,102 @@ fun CreateCadet(
         )
 
         LazyColumn(modifier.fillMaxWidth()) {
+
             item {
-                NormalText("Введите имя кадета", Modifier.padding(top = 16.dp))
-                TextField(firstName, onValueChange = { firstName = it }, Modifier.padding(vertical = 8.dp))
+                OutlinedTextField(
+                    lastName,
+                    onValueChange = { lastName = it },
+                    Modifier.padding(vertical = 8.dp),
+                    label = { Text("Фамилия") },
+                )
             }
 
             item {
-                NormalText("Введите фамилию кадета", Modifier.padding(top = 16.dp))
-                TextField(lastName, onValueChange = { lastName = it }, Modifier.padding(vertical = 8.dp))
-
+                OutlinedTextField(
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    Modifier.padding(vertical = 8.dp),
+                    label = { Text("Имя") },
+                )
             }
+
             item {
-                NormalText("Введите отчество кадета", Modifier.padding(top = 16.dp))
-                TextField(patronymic, onValueChange = { patronymic = it }, Modifier.padding(vertical = 8.dp))
+                OutlinedTextField(
+                    value = patronymic,
+                    onValueChange = { patronymic = it },
+                    Modifier.padding(vertical = 8.dp),
+                    label = { Text("Отчество") },
+                )
             }
 
             item {
-                NormalText("Введите дату рождения кадета", Modifier.padding(top = 16.dp))
-                TextField(
-                    dateOfBirthday, onValueChange = { dateOfBirthday = it }, Modifier.padding(vertical = 8.dp)
+                //todo
+                OutlinedTextField(
+                    value = dateOfBirthday,
+                    onValueChange = { dateOfBirthday = it },
+                    Modifier.padding(vertical = 8.dp),
+                    label = { Text("Дата рождения") },
                 )
             }
             item {
-                NormalText("Введите этническую группу кадета", Modifier.padding(top = 16.dp))
-                TextField(ethnicGroup, onValueChange = { ethnicGroup = it }, Modifier.padding(vertical = 8.dp))
+                OutlinedTextField(
+                    value = ethnicGroup,
+                    onValueChange = { ethnicGroup = it },
+                    Modifier.padding(vertical = 8.dp),
+                    label = { Text("Этническая группа") },
+                )
             }
 
             item {
-                NormalText("Введите город рождения кадета", Modifier.padding(top = 16.dp))
-                TextField(placeOfBirthday, onValueChange = { placeOfBirthday = it }, Modifier.padding(vertical = 8.dp))
+                OutlinedTextField(
+                    value = placeOfBirthday,
+                    onValueChange = { placeOfBirthday = it },
+                    Modifier.padding(vertical = 8.dp),
+                    label = { Text("Город рождения") },
+                )
             }
 
             item {
-                NormalText("Введите предыдущее место жительства кадета", Modifier.padding(top = 16.dp))
-                TextField(
-                    previousPlaceOfLiving,
+                OutlinedTextField(
+                    value = previousPlaceOfLiving,
                     onValueChange = { previousPlaceOfLiving = it },
-                    Modifier.padding(vertical = 8.dp)
+                    Modifier.padding(vertical = 8.dp),
+                    label = { Text("Предыдущее место жительства") },
                 )
             }
 
             item {
-
-                var expanded by remember {
-                    mutableStateOf(false)
-                }
-
-                NormalText("Выберите прикус кадета", Modifier.padding(top = 16.dp))
-                TextField(
-                    byteType, onValueChange = { byteType = it }, Modifier.padding(vertical = 8.dp)
+                val byteTypes = listOf(
+                    DropDownItem("Ортогнатический", "ORTHOGNATHIC"),
+                    DropDownItem("Глубокий", "DEEP"),
+                    DropDownItem("Дистальный", "DISTAL"),
+                    DropDownItem("Мезиальный", "MESIAL"),
+                    DropDownItem("Перекрестный", "CROSS"),
+                    DropDownItem("Прямой", "STRAIGHT"),
+                    DropDownItem("Открытый", "OPEN"),
+                    DropDownItem("Тортоаномалия", "TORTOANOMALY"),
+                    DropDownItem("Скученность", "CROWDING"),
+                    DropDownItem("Диастема/Тремы", "DIASTIMA")
+                )
+                DropDownMenu(
+                    byteTypes,
+                    { v -> byteType = v },
+                    "Выберите прикус кадета",
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
 
-
             item {
-                NormalText("Выберите группу здоровья кадета", Modifier.padding(top = 16.dp))
-                TextField(
-                    healthGroup, onValueChange = { healthGroup = it }, Modifier.padding(vertical = 8.dp)
+                val healthGroups = listOf(
+                    DropDownItem("1", "1"),
+                    DropDownItem("2", "2"),
+                    DropDownItem("3", "3")
+                )
+                DropDownMenu(
+                    healthGroups,
+                    { v -> healthGroup = v },
+                    "Выберите группу здоровья кадета",
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
 
@@ -132,11 +159,12 @@ fun CreateCadet(
                         byteType,
                         healthGroup
                     )
-                }, enabled = isValid()) {
+                }, enabled = isValid(),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
                     Text("Создать")
                 }
             }
         }
     }
 }
-

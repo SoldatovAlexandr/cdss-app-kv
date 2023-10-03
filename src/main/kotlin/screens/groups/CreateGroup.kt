@@ -5,14 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import ui.NormalText
 import java.time.LocalDateTime
 
 @Composable
@@ -20,7 +19,7 @@ fun CreateGroup(
     viewModel: GroupsViewModel,
     modifier: Modifier
 ) {
-    Column(modifier) {
+    Column(modifier.padding(20.dp)) {
 
         var name by remember { mutableStateOf("") }
         var startYear by remember { mutableStateOf(LocalDateTime.now().year.toString()) }
@@ -33,23 +32,27 @@ fun CreateGroup(
             }.padding(8.dp)
         )
 
+        OutlinedTextField(
+            name,
+            onValueChange = { name = it },
+            Modifier.padding(vertical = 8.dp),
+            label = { Text("Наименование группы") }
+        )
 
-        NormalText("Введите наименование группы", Modifier.padding(top = 16.dp))
-        TextField(name, onValueChange = { name = it }, Modifier.padding(vertical = 8.dp))
-
-        NormalText("Введите год начала обучения", Modifier.padding(top = 16.dp))
-
-        TextField(
+        OutlinedTextField(
             value = startYear,
             onValueChange = { value ->
                 startYear = value.filter { it.isDigit() }
             },
-            modifier = Modifier.padding(vertical = 8.dp)
+            modifier = Modifier.padding(vertical = 8.dp),
+            label = { Text("Год начала обучения") }
         )
 
         Button(onClick = {
             viewModel.createGroup(name, startYear)
-        }, enabled = name.isNotBlank() && startYear.isNotBlank()) {
+        }, enabled = name.isNotBlank() && startYear.isNotBlank(),
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
             Text("Создать")
         }
     }
