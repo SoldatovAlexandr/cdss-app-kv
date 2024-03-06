@@ -27,10 +27,25 @@ fun GroupTable(
     }
 
     Column {
-        Button({}) {
-            Text(
-                "Добавить группу",
-                modifier = Modifier.clickable { viewModel.setCreatedGroup(true) })
+
+        Row {
+            Column(Modifier.padding(10.dp)) {
+                Button({ viewModel.setCreatedGroup(true) }) {
+                    Text("Добавить группу")
+                }
+            }
+
+            Column(Modifier.padding(10.dp)) {
+                Button({}) {
+                    Text("Раздел 5.1 13К/МЕД")
+                }
+            }
+
+            Column(Modifier.padding(10.dp)) {
+                Button({}) {
+                    Text("Раздел 5.2 13К/МЕД")
+                }
+            }
         }
 
         LazyColumn(modifier.fillMaxWidth()) {

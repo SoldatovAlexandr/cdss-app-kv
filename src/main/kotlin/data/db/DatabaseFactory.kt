@@ -46,6 +46,9 @@ object DatabaseFactory {
             if (!SchemaUtils.checkCycle(AttachmentLossTable)) {
                 SchemaUtils.create(AttachmentLossTable)
             }
+            if (!SchemaUtils.checkCycle(OhisTable)) {
+                SchemaUtils.create(OhisTable)
+            }
         }
         db
     }

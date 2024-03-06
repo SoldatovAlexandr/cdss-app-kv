@@ -2,6 +2,7 @@ package screens.groups
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -32,28 +33,36 @@ fun CreateGroup(
             }.padding(8.dp)
         )
 
-        OutlinedTextField(
-            name,
-            onValueChange = { name = it },
-            Modifier.padding(vertical = 8.dp),
-            label = { Text("Наименование группы") }
-        )
+        Column {
+            Row {
+                OutlinedTextField(
+                    name,
+                    onValueChange = { name = it },
+                    Modifier.padding(vertical = 8.dp).weight(1f),
+                    label = { Text("Наименование группы (класс, рота, взвод)") }
+                )
+            }
 
-        OutlinedTextField(
-            value = startYear,
-            onValueChange = { value ->
-                startYear = value.filter { it.isDigit() }
-            },
-            modifier = Modifier.padding(vertical = 8.dp),
-            label = { Text("Год начала обучения") }
-        )
+            Row {
+                OutlinedTextField(
+                    value = startYear,
+                    onValueChange = { value ->
+                        startYear = value.filter { it.isDigit() }
+                    },
+                    modifier = Modifier.padding(vertical = 8.dp).weight(1f),
+                    label = { Text("Год начала обучения") }
+                )
+            }
 
-        Button(onClick = {
-            viewModel.createGroup(name, startYear)
-        }, enabled = name.isNotBlank() && startYear.isNotBlank(),
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
-            Text("Создать")
+            Row {
+                Button(onClick = {
+                    viewModel.createGroup(name, startYear)
+                }, enabled = name.isNotBlank() && startYear.isNotBlank(),
+                    modifier = Modifier.padding(vertical = 8.dp).weight(1f)
+                ) {
+                    Text("Создать")
+                }
+            }
         }
     }
 }

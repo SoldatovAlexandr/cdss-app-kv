@@ -12,9 +12,7 @@ interface CadetDao {
         dateOfBirthday: String,
         ethnicGroup: String,
         placeOfBirthday: String,
-        previousPlaceOfLiving: String,
-        byteType: String,
-        healthGroup: String
+        previousPlaceOfLiving: String
     ): DBCadet
 
     suspend fun getCadetsByGroupId(groupId: Int): List<DBCadet>

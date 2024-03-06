@@ -16,8 +16,6 @@ object CadetTable : IntIdTable("cadet_table") {
     val ethnicGroup: Column<String> = varchar("ethnic_group", 255)
     val placeOfBirthday: Column<String> = varchar("place_of_birthday", 255)
     val previousPlaceOfLiving: Column<String> = varchar("previous_place_of_living", 255)
-    val byteType: Column<String> = varchar("byte_type", 255)
-    val healthGroup: Column<String> = varchar("health_group", 255)
 }
 
 class DBCadet(id: EntityID<Int>) : Entity<Int>(id) {
@@ -31,6 +29,4 @@ class DBCadet(id: EntityID<Int>) : Entity<Int>(id) {
     var ethnicGroup by CadetTable.ethnicGroup
     var placeOfBirthday by CadetTable.placeOfBirthday
     var previousPlaceOfLiving by CadetTable.previousPlaceOfLiving
-    var byteType by CadetTable.byteType
-    var healthGroup by CadetTable.healthGroup
 }

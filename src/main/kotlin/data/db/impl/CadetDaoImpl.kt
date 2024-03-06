@@ -19,9 +19,7 @@ object CadetDaoImpl : CadetDao {
         dateOfBirthday: String,
         ethnicGroup: String,
         placeOfBirthday: String,
-        previousPlaceOfLiving: String,
-        byteType: String,
-        healthGroup: String
+        previousPlaceOfLiving: String
     ): DBCadet {
         return transaction(DatabaseFactory.db) {
             DBCadet.new {
@@ -33,8 +31,6 @@ object CadetDaoImpl : CadetDao {
                 this.ethnicGroup = ethnicGroup
                 this.placeOfBirthday = placeOfBirthday
                 this.previousPlaceOfLiving = previousPlaceOfLiving
-                this.byteType = byteType
-                this.healthGroup = healthGroup
             }
         }
     }

@@ -47,9 +47,7 @@ class GroupViewModel(
         dateOfBirthday: String,
         ethnicGroup: String,
         placeOfBirthday: String,
-        previousPlaceOfLiving: String,
-        byteType: String,
-        healthGroup: String
+        previousPlaceOfLiving: String
     ) {
         viewModelScope.launch {
             cadetRepository.create(
@@ -60,9 +58,7 @@ class GroupViewModel(
                 dateOfBirthday,
                 ethnicGroup,
                 placeOfBirthday,
-                previousPlaceOfLiving,
-                byteType,
-                healthGroup
+                previousPlaceOfLiving
             )
             getCadetsByGroupId(groupId)
             _isCreateCadet.emit(false)

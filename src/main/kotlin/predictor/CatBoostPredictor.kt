@@ -5,7 +5,7 @@ import ai.catboost.CatBoostModel
 object CatBoostPredictor : Predictor {
 
     override fun predict(checkupFeatures: CheckupFeatures): Double {
-        CatBoostModel.loadModel("model.cbm").use {
+        CatBoostModel.loadModel("/Users/asoldatov/projects/cdss-app-kv/src/main/resources/model.cbm").use {
             val predictions = it.predict(prepare(checkupFeatures), it.featureNames)
             return predictions.get(0, 0)
         }

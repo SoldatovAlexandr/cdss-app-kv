@@ -27,9 +27,7 @@ object CadetRepository {
         dateOfBirthday: String,
         ethnicGroup: String,
         placeOfBirthday: String,
-        previousPlaceOfLiving: String,
-        byteType: String,
-        healthGroup: String
+        previousPlaceOfLiving: String
     ): Resource<UiCadet> {
         return try {
             Resource.success(
@@ -41,9 +39,7 @@ object CadetRepository {
                     dateOfBirthday,
                     ethnicGroup,
                     placeOfBirthday,
-                    previousPlaceOfLiving,
-                    byteType,
-                    healthGroup
+                    previousPlaceOfLiving
                 ).toUiCadet()
             )
         } catch (e: Exception) {
@@ -63,7 +59,5 @@ fun DBCadet.toUiCadet() = UiCadet(
     dateOfBirthday,
     ethnicGroup,
     placeOfBirthday,
-    previousPlaceOfLiving,
-    byteType,
-    healthGroup
+    previousPlaceOfLiving
 )

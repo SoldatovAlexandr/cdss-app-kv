@@ -2,7 +2,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.compose")
+    id("org.jetbrains.compose") version "1.6.0-dev1296"
 }
 
 group = "edu.asoldatov"
@@ -22,6 +22,8 @@ dependencies {
 
     implementation("org.xerial:sqlite-jdbc:3.43.0.0")
     implementation("ai.catboost:catboost-prediction:1.2.2")
+    implementation("io.github.epicarchitect:calendar-compose-basis:1.0.5")
+    implementation("io.github.epicarchitect:calendar-compose-datepicker:1.0.5")
 }
 
 compose.desktop {

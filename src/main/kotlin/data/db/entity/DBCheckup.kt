@@ -22,6 +22,11 @@ object CheckupTable : IntIdTable("checkup") {
     val traumaCount: Column<String> = varchar("trauma_count", 255)
     val predictedCpu: Column<String> = varchar("predicted_cpu", 255)
     val type: Column<String> = varchar("type", 255)
+    val lprNeed: Column<String> = varchar("lpr_need", 255)
+    val lprDetails: Column<String> = varchar("lpr_details", 255)
+    val height: Column<String> = varchar("height", 255)
+    val weight: Column<String> = varchar("weight", 255)
+    val healthGroup: Column<String> = varchar("health_group", 255)
 }
 
 class DBCheckup(id: EntityID<Int>) : Entity<Int>(id) {
@@ -48,5 +53,12 @@ class DBCheckup(id: EntityID<Int>) : Entity<Int>(id) {
     val enamelSpotting by DBEnamelSpotting referrersOn EnamelSpottingTable.checkup
     val oralDamages by DBOralDamages referrersOn OralDamagesTable.checkup
     val periodontalTissues by DBPeriodontalTissues referrersOn PeriodontalTissuesTable.checkup
+
+    var lprNeed by CheckupTable.lprNeed
+    var lprDetails by CheckupTable.lprDetails
+    var height by CheckupTable.height
+    var weight by CheckupTable.weight
+    val ohise by DBOhis referrersOn OhisTable.checkup
+    var healthGroup by CheckupTable.healthGroup
 
 }

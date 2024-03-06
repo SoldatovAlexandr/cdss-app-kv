@@ -2,6 +2,7 @@ package screens.cadet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import data.model.UiCadet
 import ui.BigText
+import ui.NormalText
 
 @Composable
 fun CadetView(
@@ -33,7 +35,9 @@ fun CadetView(
             }.padding(8.dp)
         )
 
-        BigText("${cadet.lastName}  ${cadet.firstName}")
+        Row {
+            BigText("${cadet.lastName}  ${cadet.firstName}  ${cadet.patronymic}", Modifier.weight(1f))
+        }
 
         if (isCreateCheckout) {
             CreateCheckout(cadet, viewModel, modifier)

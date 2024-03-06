@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.Column
 
 object OralDamagesTable : IntIdTable("oral_damages_table") {
     val checkup = reference("checkup", CheckupTable)
-    val value: Column<String> = varchar("value", 2)
+    val value: Column<String> = varchar("value", 3)
     val number: Column<String> = varchar("number", 10)
 }
 

@@ -49,6 +49,11 @@ object CheckupDaoImpl : CheckupDao {
                 this.traumaCount = uiCheckup.traumaCount
                 this.predictedCpu = uiCheckup.traumaCount
                 this.type = uiCheckup.type
+                this.lprNeed = uiCheckup.lprNeed
+                this.lprDetails = uiCheckup.lprDetails
+                this.height = uiCheckup.height
+                this.weight = uiCheckup.weight
+                this.healthGroup = uiCheckup.healthGroup
             }
             for (tooth in uiCheckup.topTeeth) {
                 DBTooth.new {
@@ -99,6 +104,14 @@ object CheckupDaoImpl : CheckupDao {
                     this.number = tooth.number
                 }
             }
+            for (tooth in uiCheckup.ohise) {
+                DBOhis.new {
+                    this.checkup = checkup
+                    this.plaque = tooth.plaque
+                    this.stone = tooth.stone
+                    this.number = tooth.number
+                }
+            }
         }
     }
 
@@ -136,5 +149,11 @@ fun DBCheckup.toUiCheckup() = UiCheckup(
         .map { UIPeriodontalTissues(it.value, it.number) },
     attachmentLoss.map { UIAttachmentLoss(it.value, it.number) },
     enamelSpotting.map { UIEnamelSpotting(it.value, it.number) },
-    oralDamages.map { UIOralDamages(it.value, it.number) }
+    oralDamages.map { UIOralDamages(it.value, it.number) },
+    lprNeed,
+    lprDetails,
+    height,
+    weight,
+    ohise.map { UIOhisTooth(it.plaque, it.stone, it.number) },
+    healthGroup
 )

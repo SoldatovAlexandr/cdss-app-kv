@@ -9,7 +9,5 @@ class UiCadet(
     var dateOfBirthday: String,
     var ethnicGroup: String,
     var placeOfBirthday: String,
-    var previousPlaceOfLiving: String,
-    var byteType: String,
-    var healthGroup: String
+    var previousPlaceOfLiving: String
 )

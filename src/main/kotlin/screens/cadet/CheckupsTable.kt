@@ -31,10 +31,23 @@ fun CheckupsTable(
     Column {
         Box(Modifier.fillMaxWidth().height(1.dp).background(Color.LightGray))
 
-        Button({}) {
-            Text(
-                "Новый осмотр",
-                modifier = Modifier.clickable { viewModel.setCreatedCheckout(true) })
+
+        Row {
+            Column(Modifier.padding(10.dp)) {
+                Button({ viewModel.setCreatedCheckout(true) }) {
+                    Text("Осмотр")
+                }
+            }
+            Column(Modifier.padding(10.dp)) {
+                Button({}) {
+                    Text("Лечебно-профилактическое мероприятие")
+                }
+            }
+            Column(Modifier.padding(10.dp)) {
+                Button({}) {
+                    Text("Сформировать Медицинскую карту стоматологического пациента № 043/у")
+                }
+            }
         }
 
         LazyColumn(modifier.fillMaxWidth()) {

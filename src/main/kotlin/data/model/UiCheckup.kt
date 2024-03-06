@@ -25,4 +25,14 @@ class UiCheckup(
     val attachmentLoss: List<UIAttachmentLoss>,
     val enamelSpotting: List<UIEnamelSpotting>,
     val oralDamages: List<UIOralDamages>,
+
+    var lprNeed: String,
+    var lprDetails: String,
+    var height: String,
+    var weight: String,
+
+    var ohise: List<UIOhisTooth>,
+
+    var healthGroup: String
+
 )
