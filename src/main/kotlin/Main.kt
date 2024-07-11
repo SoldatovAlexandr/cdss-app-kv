@@ -21,7 +21,7 @@ fun App() {
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "CDSS",
+        title = "PredictCaries",
         icon = BitmapPainter(useResource("img/img.png", ::loadImageBitmap))
     ) {
         App()

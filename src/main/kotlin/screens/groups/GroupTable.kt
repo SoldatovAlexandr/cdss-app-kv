@@ -46,6 +46,12 @@ fun GroupTable(
                     Text("Раздел 5.2 13К/МЕД")
                 }
             }
+
+            Column(Modifier.padding(10.dp)) {
+                Button({}) {
+                    Text("Загрузить группу")
+                }
+            }
         }
 
         LazyColumn(modifier.fillMaxWidth()) {

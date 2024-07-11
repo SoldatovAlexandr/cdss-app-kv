@@ -99,12 +99,17 @@ fun CreateCheckout(
                 calculateIMT(height, weight)
             )
         }
+        var predictedCpu by remember {
+            mutableStateOf(
+                ""
+            )
+        }
 
-        fun predict() {
+        fun predict(): String {
             val calculatedCpuIndex = cpuCalculator.calculate(concatenate(checkup.topTeeth, checkup.downTeeth))
             val checkupFeatures = CheckupFeatures(
                 //cadet.dateOfBirthday
-                10, //todo
+                11, //todo
                 cadet.ethnicGroup,
                 cadet.placeOfBirthday,
                 cadet.previousPlaceOfLiving,
@@ -138,7 +143,8 @@ fun CreateCheckout(
                 if (checkup.tjpLimitedMobility.isBlank()) 0 else checkup.tjpLimitedMobility.toInt(),
                 calculatedCpuIndex.getIndexCPUcp()
             )
-            checkup.predictedCpu = "%.1f".format(cpuPredictor.predict(checkupFeatures))
+            //checkup.predictedCpu = "%.1f".format(cpuPredictor.predict(checkupFeatures))
+            return "%.1f".format(cpuPredictor.predict(checkupFeatures))
         }
 
         fun calculateOhisIndex() {
@@ -161,7 +167,7 @@ fun CreateCheckout(
             }
         }
 
-        predict()
+        predictedCpu = predict()
         calculateOhisIndex()
 
         Row(Modifier.height(50.dp)) {
@@ -169,7 +175,7 @@ fun CreateCheckout(
                 NormalText("Осмотр ${LocalDate.now()}")
             }
             Column(Modifier.weight(1f)) {
-                BigText("Увеличение индекса КПУ через год: ${checkup.predictedCpu}")
+                BigText("Увеличение индекса КПУ через год: $predictedCpu")
             }
         }
 
@@ -193,6 +199,12 @@ fun CreateCheckout(
                                     modifier = Modifier.padding(vertical = 8.dp)
                                 )
                             }
+                            Column(Modifier.weight(1f)) {
+                                OutlinedTextField(
+                                    value = "",
+                                    onValueChange = {},
+                                    label = { Text("Соматическая заболеваемость, МКБ-10") })
+                            }
 
                             Column(Modifier.weight(1f)) {
                                 OutlinedTextField(value = height, onValueChange = { value ->
@@ -213,7 +225,22 @@ fun CreateCheckout(
                             }
                         }
                         Row(Modifier.padding(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 10.dp)) {
-                            NormalText("Индекс массы тела: $imt")
+                            Column(Modifier.weight(1f)) {
+                                NormalText("Индекс массы тела: $imt")
+                                NormalText("Тип питания: нормальный")
+                            }
+                            Column(Modifier.weight(1f)) {
+                                OutlinedTextField(
+                                    value = "",
+                                    onValueChange = {},
+                                    label = { Text("Стомат. проф. мероприятия") })
+                            }
+                            Column(Modifier.weight(1f)) {
+                                OutlinedTextField(
+                                    value = "",
+                                    onValueChange = {},
+                                    label = { Text("Фториды в водоисточнике") })
+                            }
                         }
                     }
                 }
@@ -235,7 +262,7 @@ fun CreateCheckout(
                                             cpu = cpuCalculator.calculateForUI(
                                                 concatenate(checkup.topTeeth, checkup.downTeeth), cadet.dateOfBirthday
                                             )
-                                            predict()
+                                            predictedCpu = predict()
                                         }, tooth.number, tooth.value, tooth.number.substring(2).toInt() < 6)
                                     }
                                 }
@@ -246,7 +273,7 @@ fun CreateCheckout(
                                             cpu = cpuCalculator.calculateForUI(
                                                 concatenate(checkup.topTeeth, checkup.downTeeth), cadet.dateOfBirthday
                                             )
-                                            predict()
+                                            predictedCpu = predict()
                                         }, tooth.number, tooth.value, tooth.number.substring(2).toInt() < 6)
                                     }
                             }
@@ -287,7 +314,7 @@ fun CreateCheckout(
                                     checkup.enamelSpotting.forEach { tooth ->
                                         EnamelSpottingDropDownMenu({
                                             tooth.value = it
-                                            predict()
+                                            predictedCpu = predict()
                                         }, tooth.number, tooth.value)
                                     }
                                 }
@@ -298,7 +325,7 @@ fun CreateCheckout(
 
                                 FluoroseDropDownMenu({
                                     checkup.fluorose = it
-                                    predict()
+                                    predictedCpu = predict()
                                 }, "", checkup.fluorose)
                             }
                         }
@@ -309,14 +336,14 @@ fun CreateCheckout(
 
                                 ErosionDropDownMenu({
                                     checkup.erosion = it
-                                    predict()
+                                    predictedCpu = predict()
                                 }, "Состояние", checkup.erosion)
 
                                 OutlinedTextField(value = erosionCount, onValueChange = { value ->
                                     erosionCount = value.filter {
                                         it.isDigit()
                                     }
-                                    predict()
+                                    predictedCpu = predict()
                                 }, label = { Text("Количество пораженных зубов") })
                             }
 
@@ -325,12 +352,12 @@ fun CreateCheckout(
 
                                 TraumaDropDownMenu({
                                     checkup.trauma = it
-                                    predict()
+                                    predictedCpu = predict()
                                 }, "Состояние", checkup.trauma)
 
                                 OutlinedTextField(value = traumaCount, onValueChange = { value ->
                                     traumaCount = value.filter { it.isDigit() }
-                                    predict()
+                                    predictedCpu = predict()
                                 }, label = { Text("Количество пораженных зубов") })
                             }
                         }
@@ -396,7 +423,7 @@ fun CreateCheckout(
                                 PeriodontalTissuesDropDownMenu(
                                     {
                                         tissues.value = it
-                                        predict()
+                                        predictedCpu = predict()
                                     }, tissues.number, tissues.value
                                 )
                             }
@@ -405,9 +432,12 @@ fun CreateCheckout(
                             checkup.downPeriodontalTissues.forEach { tissues ->
                                 PeriodontalTissuesDropDownMenu({
                                     tissues.value = it
-                                    predict()
+                                    predictedCpu = predict()
                                 }, tissues.number, tissues.value)
                             }
+                        }
+                        Row {
+                            Text("Коммунальный пародонтологический индекс CPI=0", Modifier.padding(top = 30.dp))
                         }
                     }
                 }
@@ -428,7 +458,7 @@ fun CreateCheckout(
                                     OralDamageStateDropDownMenu(
                                         {
                                             value.value = it
-                                            predict()
+                                            predictedCpu = predict()
                                         }, "", value.value
                                     )
                                 }
@@ -441,7 +471,7 @@ fun CreateCheckout(
                                     OralDamageLocaleDropDownMenu(
                                         {
                                             value.number = it
-                                            predict()
+                                            predictedCpu = predict()
                                         }, "", value.number
                                     )
                                 }
@@ -463,7 +493,7 @@ fun CreateCheckout(
                             checkup.attachmentLoss.forEach { tooth ->
                                 AttachmentLossDropDownMenu({
                                     tooth.value = it
-                                    predict()
+                                    predictedCpu = predict()
                                 }, tooth.number, tooth.value)
                             }
                         }
@@ -488,7 +518,7 @@ fun CreateCheckout(
             }
 
             item {
-                BigText("Оценка височнонижечелюстного сустава", Modifier.padding(top = 30.dp))
+                BigText("Оценка височно-нижечелюстного сустава", Modifier.padding(top = 30.dp))
 
                 Card(
                     border = BorderStroke(2.dp, Color.Gray), modifier = Modifier.fillMaxWidth()
@@ -499,26 +529,26 @@ fun CreateCheckout(
                             Column(Modifier.weight(1f)) {
                                 TemporomandibularJointDropDownMenu({
                                     checkup.tjpClicking = it
-                                    predict()
-                                }, "Щелканье", checkup.tjpClicking)
+                                    predictedCpu = predict()
+                                }, "Симптомы (признаки)", checkup.tjpClicking)
                             }
                             Column(Modifier.weight(1f)) {
                                 TemporomandibularJointDropDownMenu({
                                     checkup.tjpClicking = it
-                                    predict()
-                                }, "Симптомы", checkup.tjpClicking)
+                                    predictedCpu = predict()
+                                }, "Щелканье", checkup.tjpClicking)
                             }
                             Column(Modifier.weight(1f)) {
                                 TemporomandibularJointDropDownMenu({
                                     checkup.tjpSoreness = it
-                                    predict()
+                                    predictedCpu = predict()
                                 }, "Болезненность", checkup.tjpSoreness)
                             }
                             Column(Modifier.weight(1f)) {
                                 TemporomandibularJointDropDownMenu(
                                     {
                                         checkup.tjpLimitedMobility = it
-                                        predict()
+                                        predictedCpu = predict()
                                     }, "Ограничение подвижности челюсти", checkup.tjpLimitedMobility
                                 )
                             }
@@ -528,34 +558,131 @@ fun CreateCheckout(
             }
 
             item {
-                BigText("Нуждаемость в ЛПР", Modifier.padding(top = 30.dp))
+                BigText("Диагноз", Modifier.padding(top = 30.dp))
 
+                var diagnos = "Осложенный кариес зубов."
                 Card(
                     border = BorderStroke(2.dp, Color.Gray), modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(Modifier.padding(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 10.dp)) {
 
                         Row {
-                            LPRneedDropDownMenu(
-                                {
-                                    checkup.lprNeed = it
-                                }, "", "Выберите значение"
-                            )
-                        }
-                        Row(Modifier.padding(top = 20.dp)) {
                             OutlinedTextField(
-                                value = lprDetails,
+                                value = diagnos,
                                 onValueChange = { value ->
                                     run {
                                         if (value.length < 255) {
-                                            lprDetails = value
+                                            diagnos = value
                                         }
                                     }
                                 },
-                                Modifier.padding(vertical = 8.dp).weight(fill = true, weight = 1f),
-                                label = { Text("Планируемые мероприятия на следующий прием") },
+                                Modifier.padding(vertical = 8.dp).weight(fill = true, weight = 1f)
                             )
                         }
+                    }
+                }
+
+            }
+
+            item {
+                BigText("Нуждаемость в лечебно-профилактических мероприятиях", Modifier.padding(top = 30.dp))
+                Card(
+                    border = BorderStroke(2.dp, Color.Gray), modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(Modifier.padding(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 10.dp)) {
+
+                        var isAgree1 by remember {
+                            mutableStateOf(
+                                true
+                            )
+                        }
+
+                        BigText("1. Нуждается в профилактической стоматологической помощи")
+                        Row(Modifier.padding(top = 10.dp)) {
+                            Checkbox(isAgree1, { isAgree1 = it })
+                            Text("Разработка индивидуальной программы профилактики", Modifier.padding(top = 15.dp))
+                        }
+                        Row {
+                            if (!isAgree1) {
+                                OutlinedTextField(
+                                    value = lprDetails,
+                                    onValueChange = { value ->
+                                        run {
+                                            if (value.length < 255) {
+                                                lprDetails = value
+                                            }
+                                        }
+                                    },
+                                    Modifier.padding(vertical = 8.dp).weight(fill = true, weight = 1f),
+                                    label = { Text("Причина несогласия с проведением мероприятия") },
+                                )
+                            }
+                        }
+
+                        var isAgree2 by remember {
+                            mutableStateOf(
+                                true
+                            )
+                        }
+                        Row {
+                            Checkbox(isAgree2, { isAgree2 = it })
+                            Text("Уроки здоровья (стомат. просвещение)", Modifier.padding(top = 15.dp))
+                        }
+                        Row {
+                            if (!isAgree2) {
+                                OutlinedTextField(
+                                    value = lprDetails,
+                                    onValueChange = { value ->
+                                        run {
+                                            if (value.length < 255) {
+                                                lprDetails = value
+                                            }
+                                        }
+                                    },
+                                    Modifier.padding(vertical = 8.dp).weight(fill = true, weight = 1f),
+                                    label = { Text("Причина несогласия с проведением мероприятия") },
+                                )
+                            }
+                        }
+
+                        var isAgree3 by remember {
+                            mutableStateOf(
+                                true
+                            )
+                        }
+                        Row {
+                            Checkbox(isAgree3, { isAgree3 = it })
+                            Text("Плановый профилактический осмотр через 3 или 6 мес", Modifier.padding(top = 15.dp))
+                        }
+                        Row {
+                            if (!isAgree3) {
+                                OutlinedTextField(
+                                    value = lprDetails,
+                                    onValueChange = { value ->
+                                        run {
+                                            if (value.length < 255) {
+                                                lprDetails = value
+                                            }
+                                        }
+                                    },
+                                    Modifier.padding(vertical = 8.dp).weight(fill = true, weight = 1f),
+                                    label = { Text("Причина несогласия с прогнозом") },
+                                )
+                            }
+                        }
+
+                        //– Разработка индивидуальной программы профилактики
+
+                        //Причина несогласия с прогнозом
+                        /*
+                     Row {
+                             LPRneedDropDownMenu(
+                                 {
+                                     checkup.lprNeed = it
+                                 }, "", "Выберите значение"
+                             )
+                         }*/
+                        Text("При несогласии отменить выбор*", Modifier.padding(top = 15.dp))
                     }
                 }
 

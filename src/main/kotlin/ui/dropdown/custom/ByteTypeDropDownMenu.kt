@@ -44,6 +44,15 @@ fun ByteTypeDropDownMenu(
                 initialValue
             )
         }
+
+        //todo
+        Column(Modifier.weight(1f)) {
+            ToothAnomaliesDropDownMenu(
+                onSelect,
+                "Зубочелюстные аномалии",
+                "-"
+            )
+        }
     }
 }
 
@@ -102,5 +111,19 @@ fun ToothPlaceByteTypeDropDownMenu(
         )
     }
 
+    CustomDropDownMenu(onSelect, label, initialValue, suggestions, modifier)
+}
+
+@Composable
+fun ToothAnomaliesDropDownMenu(
+    onSelect: (String) -> Unit,
+    label: String,
+    initialValue: String,
+    modifier: Modifier = Modifier
+) {
+    val suggestions = listOf(
+        CustomDropDownItem("Аномалия положения зубов", "К07.3"),
+        CustomDropDownItem("-", "-")
+    )
     CustomDropDownMenu(onSelect, label, initialValue, suggestions, modifier)
 }
