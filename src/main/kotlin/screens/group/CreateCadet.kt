@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import data.model.UiGroup
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun CreateCadet(
@@ -33,7 +35,19 @@ fun CreateCadet(
         var previousPlaceOfLiving by remember { mutableStateOf("") }
 
         fun isValid(): Boolean {
-            return firstName.isNotBlank() && lastName.isNotBlank() && patronymic.isNotBlank() && dateOfBirthday.isNotBlank()
+            return firstName.isNotBlank() && lastName.isNotBlank()
+                    && patronymic.isNotBlank() && dateOfBirthday.isNotBlank()
+                    && ethnicGroup.isNotBlank() && placeOfBirthday.isNotBlank()
+                    && previousPlaceOfLiving.isNotBlank()
+        }
+
+        fun dateOfBirthdayIsCorrect(): Boolean {
+            try {
+                LocalDate.parse(dateOfBirthday, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                return true
+            } catch (e: Exception) {
+                return false
+            }
         }
 
         Icon(
@@ -83,7 +97,7 @@ fun CreateCadet(
                         value = dateOfBirthday,
                         onValueChange = { dateOfBirthday = it },
                         Modifier.padding(vertical = 8.dp).weight(1f),
-                        label = { Text("Дата рождения") },
+                        label = { Text("Дата рождения в формате dd.MM.yyyy") },
                     )
                 }
             }
@@ -135,7 +149,7 @@ fun CreateCadet(
                                 previousPlaceOfLiving
                             )
                         },
-                        enabled = isValid(),
+                        enabled = isValid() && dateOfBirthdayIsCorrect(),
                         modifier = Modifier.padding(vertical = 8.dp).weight(1f),
                 ) {
                     Text("Создать")

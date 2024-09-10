@@ -9,17 +9,20 @@ import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
+private const val DATABASE_FILE_NAME = "cdss-app-kv.db"
+
 object DatabaseFactory {
 
     val db by lazy {
-        val file = File("data.db")
+        val file = File(DATABASE_FILE_NAME)
+
         if (!file.exists()) {
             file.createNewFile()
-            useResource("data.db") {
+            useResource( DATABASE_FILE_NAME) {
                 it.copyTo(file.outputStream())
             }
         }
-        val db = Database.connect("jdbc:sqlite:data.db", "org.sqlite.JDBC")
+        val db = Database.connect("jdbc:sqlite:$DATABASE_FILE_NAME", "org.sqlite.JDBC")
         transaction(db) {
             addLogger(StdOutSqlLogger)
             if (!SchemaUtils.checkCycle(GroupTable)) {

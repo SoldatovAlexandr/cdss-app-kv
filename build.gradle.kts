@@ -34,6 +34,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Exe)
             packageName = "cdss-app-kv"
             packageVersion = "1.0.0"
+            modules("java.sql")
         }
     }
 }
