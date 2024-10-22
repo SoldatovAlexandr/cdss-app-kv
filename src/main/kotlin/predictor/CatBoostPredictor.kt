@@ -1,11 +1,14 @@
 package predictor
 
 import ai.catboost.CatBoostModel
+import java.io.File
 
 object CatBoostPredictor : Predictor {
 
     override fun predict(checkupFeatures: CheckupFeatures): Double {
-        CatBoostModel.loadModel("model.cbm").use {
+        val file = File("model.cbm")
+
+        CatBoostModel.loadModel(file.absolutePath).use {
             val predictions = it.predict(prepare(checkupFeatures), it.featureNames)
             return predictions.get(0, 0)
         }
